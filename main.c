@@ -6,9 +6,9 @@
 
 
 // NOMBRES Y CODIGOS DE LOS INTEGRANTES
-Gregorio Ospina codigo
-Sergio Naranjo 201631670
-Juan Felipe Garcia 201531352
+//Gregorio Ospina codigo
+//Sergio Naranjo 201631670
+//Juan Felipe Garcia 201531352
 
 
 
