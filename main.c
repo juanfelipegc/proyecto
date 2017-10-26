@@ -34,10 +34,10 @@ int longitudCodigo[NUMERO_CODIGOS];
 char alfabetoUtil[NUMERO_CODIGOS];
 char alfabeto[NUMERO_CODIGOS];
 
-// Aca quiero hacer un arreglo de chars en el que cada elemento sea la letra del alfabeto en el orden 
-// de los otros dos arreglos, para asi poder buscar la letra segun el input
-// y poder encontrar el no de bits y la longitud de codigo facil sin tantos switch/case.
+
 // ESTE metodo me esta sacando error o no he podido hacer que imprima algun valor relevante...
+
+/*
 void iniciarAlfabeto()
 {
 	printf("hola");
@@ -51,7 +51,11 @@ void iniciarAlfabeto()
 
 	}
 }
+*/
 
+// Aca quiero hacer un arreglo de chars en el que cada elemento sea la letra del alfabeto en el orden 
+// de los otros dos arreglos, para asi poder buscar la letra segun el input
+// y poder encontrar el no de bits y la longitud de codigo facil sin tantos switch/case.
 void a2i()
 {
 	alfabetoUtil[0] = 'A';
