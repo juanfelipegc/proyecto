@@ -32,6 +32,40 @@ unsigned char codigoCompresion[NUMERO_CODIGOS];
 int longitudCodigo[NUMERO_CODIGOS];
 
 
+char alfabeto[NUMERO_CODIGOS];
+
+// Aca quiero hacer un arreglo de chars en el que cada elemento sea la letra del alfabeto en el orden 
+// de los otros dos arreglos, para asi poder buscar la letra segun el input
+// y poder encontrar el no de bits y la longitud de codigo facil sin tantos switch/case.
+// ESTE metodo me esta sacando error o no he podido hacer que imprima algun valor relevante...
+void iniciarAlfabeto()
+{
+	printf("hola");
+
+	char * letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+	int i = 0;
+	for (char * ptr = letters; *ptr != 0; ++ptr) {
+		char ch = *ptr;
+		alfabeto[i] = ch;
+		i++;
+
+	}
+}
+
+//Este metodo es para poder sacar el indice de cierta letra entrada por parametro para asi poder hacer referencia cruzada con los
+// otros arreglos.
+int getChar(char x)
+{
+	for (int i = 0; i < NUMERO_CODIGOS; i++)
+	{
+		if (alfabeto[i] == x)
+		{
+			return i;
+		}
+	}
+	return -1;
+}
+
 
 //-- Prototipos de las funciones
 int readFile(Archivo * archivo, char *);
@@ -156,12 +190,55 @@ void writeFile(int n, Archivo * archivoCodificado, char *nombreArchivo)
 }
 
 
+
+
 // Esta funcion se encarga de codificar cada uno de los valores que se encuentran en
 // la estructura llamada archivo y asignarlos a la estructura llamada archivocodificado.
 // DESARROLLAR ESTA FUNCION EN SU TOTALIDAD.
 int codificar(Archivo * archivo, Archivo * archivocodificado)
 {
-	
+	iniciarAlfabeto();
+	int contador = archivo->tamanio;
+	unsigned long long Bolsa = 0;
+	char itemsEnBolsa = 0;
+	int contador2 = 0;
+	while (contador != 0)
+	{
+		char letraAComprimir = archivo->informacion[archivo->tamanio - contador];
+		int posicionDeChar = getChar(letraAComprimir);
+		if (posicionDeChar == -1)
+		{
+			printf("No puede ingresar nada no alfanumerico");
+			exit(EXIT_FAILURE);
+
+		}
+		int numeroDeBits = longitudCodigo[posicionDeChar];
+		char codigo = codigoCompresion[posicionDeChar] & 0xFF;
+		itemsEnBolsa += numeroDeBits;
+		Bolsa = letraAComprimir << 64 - numeroDeBits;
+
+		if (itemsEnBolsa > 57)
+		{
+			while (itemsEnBolsa > 0)
+			{
+				archivocodificado->tamanio += 8;
+				char nuevoCod = itemsEnBolsa & 0xff;
+				archivocodificado->informacion[contador2] = nuevoCod;
+				Bolsa = Bolsa >> 8;
+			}
+		}
+		contador--;
+	}
+	while (itemsEnBolsa > 0)
+	{
+		archivocodificado->tamanio += itemsEnBolsa;
+		char nuevoCod = itemsEnBolsa & 0xff;
+		archivocodificado->informacion[contador2] = nuevoCod;
+		Bolsa = Bolsa >> 8;
+	}
+
+
+
 }
 
 // Esta funcion recibe como parametros el vector de datos codificados,
