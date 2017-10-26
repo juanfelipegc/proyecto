@@ -31,7 +31,7 @@ unsigned char codigoCompresion[NUMERO_CODIGOS];
 // en el arreglo de arriba
 int longitudCodigo[NUMERO_CODIGOS];
 
-
+char alfabetoUtil[NUMERO_CODIGOS];
 char alfabeto[NUMERO_CODIGOS];
 
 // Aca quiero hacer un arreglo de chars en el que cada elemento sea la letra del alfabeto en el orden 
@@ -52,13 +52,44 @@ void iniciarAlfabeto()
 	}
 }
 
+void a2i()
+{
+	alfabetoUtil[0] = 'A';
+	alfabetoUtil[1] = 'B';
+	alfabetoUtil[2] = 'C';
+	alfabetoUtil[3] = 'D';
+	alfabetoUtil[4] = 'E';
+	alfabetoUtil[5] = 'F';
+	alfabetoUtil[6] = 'G';
+	alfabetoUtil[7] = 'H';
+	alfabetoUtil[8] = 'I';
+	alfabetoUtil[9] = 'J';
+	alfabetoUtil[10] = 'K';
+	alfabetoUtil[11] = 'L';
+	alfabetoUtil[12] = 'M';
+	alfabetoUtil[13] = 'N';
+	alfabetoUtil[14] = 'O';
+	alfabetoUtil[15] = 'P';
+	alfabetoUtil[16] = 'Q';
+	alfabetoUtil[17] = 'R';
+	alfabetoUtil[18] = 'S';
+	alfabetoUtil[19] = 'T';
+	alfabetoUtil[20] = 'U';
+	alfabetoUtil[21] = 'V';
+	alfabetoUtil[22] = 'W';
+	alfabetoUtil[23] = 'X';
+	alfabetoUtil[24] = 'Y';
+	alfabetoUtil[25] = 'Z';
+	
+}
+
 //Este metodo es para poder sacar el indice de cierta letra entrada por parametro para asi poder hacer referencia cruzada con los
 // otros arreglos.
 int getChar(char x)
 {
 	for (int i = 0; i < NUMERO_CODIGOS; i++)
 	{
-		if (alfabeto[i] == x)
+		if (alfabetoUtil[i] == x)
 		{
 			return i;
 		}
@@ -197,7 +228,7 @@ void writeFile(int n, Archivo * archivoCodificado, char *nombreArchivo)
 // DESARROLLAR ESTA FUNCION EN SU TOTALIDAD.
 int codificar(Archivo * archivo, Archivo * archivocodificado)
 {
-	iniciarAlfabeto();
+	a2i();
 	int contador = archivo->tamanio;
 	unsigned long long Bolsa = 0;
 	char itemsEnBolsa = 0;
@@ -225,6 +256,7 @@ int codificar(Archivo * archivo, Archivo * archivocodificado)
 				char nuevoCod = itemsEnBolsa & 0xff;
 				archivocodificado->informacion[contador2] = nuevoCod;
 				Bolsa = Bolsa >> 8;
+				contador2++;
 			}
 		}
 		contador--;
@@ -235,9 +267,10 @@ int codificar(Archivo * archivo, Archivo * archivocodificado)
 		char nuevoCod = itemsEnBolsa & 0xff;
 		archivocodificado->informacion[contador2] = nuevoCod;
 		Bolsa = Bolsa >> 8;
+		contador2++;
 	}
 
-
+	return archivocodificado->tamanio;
 
 }
 
@@ -258,6 +291,15 @@ void agregarAlArreglo(unsigned char datosCodificados[], unsigned char codigo, in
 // NO MODIFICAR
 int main()
 {
+
+/*	a2i();
+	int i = 0;
+	for (int i = 0; i < NUMERO_CODIGOS; i++)
+	{
+		char x = alfabetoUtil[i];
+		printf(" el char es %c \n", x);
+	}
+*/
 	int tamanio;
 	int tamanioCodificado;
 	unsigned char nombreArchivo[] = "";
