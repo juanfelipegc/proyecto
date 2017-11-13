@@ -1,4 +1,4 @@
-#define _CRT_SECURE_NO_DEPRECATE 
+#define _CRT_SECURE_NO_DEPRECATE
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -27,79 +27,10 @@ typedef struct archivo
 // arreglo que contiene el codigo. Cada byte contiene un codigo de compresion
 
 unsigned char codigoCompresion[NUMERO_CODIGOS];
-// arreglo con la longitud. Cada byte tiene la longitud en bits del codigo de compresion correspondiente 
+// arreglo con la longitud. Cada byte tiene la longitud en bits del codigo de compresion correspondiente
 // en el arreglo de arriba
 int longitudCodigo[NUMERO_CODIGOS];
 
-char alfabetoUtil[NUMERO_CODIGOS];
-char alfabeto[NUMERO_CODIGOS];
-
-
-// ESTE metodo me esta sacando error o no he podido hacer que imprima algun valor relevante...
-
-/*
-void iniciarAlfabeto()
-{
-	printf("hola");
-
-	char * letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-	int i = 0;
-	for (char * ptr = letters; *ptr != 0; ++ptr) {
-		char ch = *ptr;
-		alfabeto[i] = ch;
-		i++;
-
-	}
-}
-*/
-
-// Aca quiero hacer un arreglo de chars en el que cada elemento sea la letra del alfabeto en el orden 
-// de los otros dos arreglos, para asi poder buscar la letra segun el input
-// y poder encontrar el no de bits y la longitud de codigo facil sin tantos switch/case.
-void a2i()
-{
-	alfabetoUtil[0] = 'A';
-	alfabetoUtil[1] = 'B';
-	alfabetoUtil[2] = 'C';
-	alfabetoUtil[3] = 'D';
-	alfabetoUtil[4] = 'E';
-	alfabetoUtil[5] = 'F';
-	alfabetoUtil[6] = 'G';
-	alfabetoUtil[7] = 'H';
-	alfabetoUtil[8] = 'I';
-	alfabetoUtil[9] = 'J';
-	alfabetoUtil[10] = 'K';
-	alfabetoUtil[11] = 'L';
-	alfabetoUtil[12] = 'M';
-	alfabetoUtil[13] = 'N';
-	alfabetoUtil[14] = 'O';
-	alfabetoUtil[15] = 'P';
-	alfabetoUtil[16] = 'Q';
-	alfabetoUtil[17] = 'R';
-	alfabetoUtil[18] = 'S';
-	alfabetoUtil[19] = 'T';
-	alfabetoUtil[20] = 'U';
-	alfabetoUtil[21] = 'V';
-	alfabetoUtil[22] = 'W';
-	alfabetoUtil[23] = 'X';
-	alfabetoUtil[24] = 'Y';
-	alfabetoUtil[25] = 'Z';
-	
-}
-
-//Este metodo es para poder sacar el indice de cierta letra entrada por parametro para asi poder hacer referencia cruzada con los
-// otros arreglos.
-int getChar(char x)
-{
-	for (int i = 0; i < NUMERO_CODIGOS; i++)
-	{
-		if (alfabetoUtil[i] == x)
-		{
-			return i;
-		}
-	}
-	return -1;
-}
 
 
 //-- Prototipos de las funciones
@@ -109,6 +40,9 @@ void writeFile(int, Archivo * archivoCodificado, char *);
 int codificar(Archivo * archivo, Archivo * archivoCodificado);
 void agregarAlArreglo(unsigned char[], unsigned char, int, int, int);
 void uploadCode(unsigned char[], char *);
+char printCodigo(char letra);
+char getCodigo(char letra);
+int getLong(char letra);
 
 
 //-- Funciones
@@ -117,7 +51,7 @@ void uploadCode(unsigned char[], char *);
 // Retorna el n�mero de bytes leidos.
 // No hay que completar nada en esta funcion.
 // NO MODIFICAR
-int readFile( Archivo * archivo, char * nombreArchivo )
+int readFile(Archivo * archivo, char * nombreArchivo)
 {
 	FILE *file;
 	int n;
@@ -130,16 +64,16 @@ int readFile( Archivo * archivo, char * nombreArchivo )
 	fseek(file, 0, SEEK_END);
 	n = ftell(file);
 	fseek(file, 0, SEEK_SET);
-	
-	archivo -> tamanio = n;	
-	archivo -> informacion = (unsigned char *) calloc (n, sizeof (unsigned char));
 
-	for ( x = 0; x < n; x++) {
-			fread (&archivo -> informacion [x], sizeof(unsigned char ), 1, file);
-		}
-		
+	archivo->tamanio = n;
+	archivo->informacion = (unsigned char *)calloc(n, sizeof(unsigned char));
+
+	for (x = 0; x < n; x++) {
+		fread(&archivo->informacion[x], sizeof(unsigned char), 1, file);
+	}
+
 	fclose(file);
-	
+
 	return n;
 }
 
@@ -178,106 +112,121 @@ int readFileCode(unsigned char datos[], char *nombreArchivo)
 void uploadCode(unsigned char codigo[], char *nombreArchivoCodigo)
 {
 	unsigned char archivoCodigo[TAMANIO_MAX];
-	//en la primera mitad guardamos el codigo de compresion, en la segunda mitad, en cada byte, 
+	//en la primera mitad guardamos el codigo de compresion, en la segunda mitad, en cada byte,
 	//guardamos la lognitud en bits de cada traduccion
 
 	int tamanioCodigoTotal = readFileCode(archivoCodigo, nombreArchivoCodigo); // esto deberia ser 52
 	int tamanioCodigo = tamanioCodigoTotal / 2; // deberia ser 26
 	int i;
-	
+
 	printf("El tamanio del codigo es %d \n", tamanioCodigoTotal);
 
 	//guardamos el codigo y su longitud en los arreglos de arriba
-	for ( i = 0; i < tamanioCodigo; i++) {
-		codigo[i]   = archivoCodigo[i];
+	for (i = 0; i < tamanioCodigo; i++) {
+		codigo[i] = archivoCodigo[i];
 	}
 
-	for ( i = tamanioCodigo; i < tamanioCodigoTotal; i++) {
+	for (i = tamanioCodigo; i < tamanioCodigoTotal; i++) {
 		longitudCodigo[i - tamanioCodigo] = (int)archivoCodigo[i];
 	}
 }
 
-
+/*
 // Esta funcion se encarga de escribir un archivo a partir del vector datos.
 // El numero de bytes que se deben escribir viene en el parametro n.
 // No hay que completar nada en esta funcion.
 // NO MODIFICAR
 void writeFile(int n, Archivo * archivoCodificado, char *nombreArchivo)
 {
-	FILE *file;
-	char datos[] = "";
-	char filter = (char) 127;
-	int i;
-	
-	strcpy(datos, archivoCodificado->informacion);
-    for( i = 0; i < n; i++){
-        datos[i] = datos[i] & filter;
-    }
+FILE *file;
+char datos[] = "";
+char filter = (char) 127;
+int i;
 
-	if (!(file = fopen(nombreArchivo, "wb"))) {
-		printf("No se puede abrir el archivo: %s\n", nombreArchivo);
-		exit(EXIT_FAILURE);
-	}
-
-	fwrite(datos, 1, n, file);
-
-	fclose(file);
+strcpy(datos, archivoCodificado->informacion);
+for( i = 0; i < n; i++){
+datos[i] = datos[i] & filter;
 }
 
+if (!(file = fopen(nombreArchivo, "wb"))) {
+printf("No se puede abrir el archivo: %s\n", nombreArchivo);
+exit(EXIT_FAILURE);
+}
 
+fwrite(datos, 1, n, file);
 
+fclose(file);
+}
+*/
+
+// Esta funcion se encarga de escribir un archivo a partir del vector datos.
+
+// El numero de bytes que se deben escribir viene en el parametro n.
+
+// No hay que completar nada en esta funcion.
+
+void writeFile(int n, Archivo * archivoCodificado, char *nombreArchivo)
+
+{
+
+	FILE *file;
+
+	if (!(file = fopen(nombreArchivo, "wb")))
+
+	{
+
+		printf("No se puede abrir el archivo: %s\n", nombreArchivo);
+
+		exit(EXIT_FAILURE);
+
+	}
+
+	fwrite((archivoCodificado->informacion), 1, n, file);
+	fclose(file);
+
+}
 
 // Esta funcion se encarga de codificar cada uno de los valores que se encuentran en
 // la estructura llamada archivo y asignarlos a la estructura llamada archivocodificado.
 // DESARROLLAR ESTA FUNCION EN SU TOTALIDAD.
-int codificar(Archivo * archivo, Archivo * archivocodificado)
+int codificar(Archivo * archivo, Archivo * archivoCodificado)
 {
-	a2i();
-	int contador = archivo->tamanio;
-	unsigned long long Bolsa = 0;
-	char itemsEnBolsa = 0;
-	int contador2 = 0;
-	while (contador != 0)
-	{
-		char letraAComprimir = archivo->informacion[archivo->tamanio - contador];
-		int posicionDeChar = getChar(letraAComprimir);
-		if (posicionDeChar == -1)
-		{
-			printf("No puede ingresar nada no alfanumerico");
-			exit(EXIT_FAILURE);
+	// Representa la posicion del bit donde se debe poner el sguiente codigo.
+	int posicion = 0;
+	// Cuantos codigos se han procesado.
+	int cantidadDeCodigos = 0; 
 
-		}
-		int numeroDeBits = longitudCodigo[posicionDeChar];
-		char codigo = codigoCompresion[posicionDeChar] & 0xFF;
-		itemsEnBolsa += numeroDeBits;
-		Bolsa = letraAComprimir << 64 - numeroDeBits;
 
-		if (itemsEnBolsa > 57)
-		{
-			while (itemsEnBolsa > 0)
-			{
-				archivocodificado->tamanio += 8;
-				char nuevoCod = itemsEnBolsa & 0xff;
-				archivocodificado->informacion[contador2] = nuevoCod;
-				Bolsa = Bolsa >> 8;
-				contador2++;
-			}
-		}
-		contador--;
-	}
-	while (itemsEnBolsa > 0)
-	{
-		archivocodificado->tamanio += itemsEnBolsa;
-		char nuevoCod = itemsEnBolsa & 0xff;
-		archivocodificado->informacion[contador2] = nuevoCod;
-		Bolsa = Bolsa >> 8;
-		contador2++;
+	while (cantidadDeCodigos < archivo->tamanio) {
+		char agregar = getCodigo(*archivo->informacion); //el char con el codigo respectivo a la letra actual
+		int longitud = getLong(*archivo->informacion); // la longitud del cdigo respectivo a la letra actual.
+
+		//llama al metodo encargado de agregar la infomracion.
+		agregarAlArreglo(archivoCodificado->informacion, agregar, longitud, posicion, archivoCodificado->tamanio + posicion);
+								
+		//Se incrementa la posicion de busqueda
+		archivo->informacion++;
+		cantidadDeCodigos++;
+		posicion = posicion + longitud;
+
 	}
 
-	return archivocodificado->tamanio;
-
+	// retorna la posicion a codificar.
+	return posicion ;
 }
 
+
+//Encuentra el codigo de la letra respectiva usando el sistema ASCII donde 'A' es 0 y 'Z' es 90
+char getCodigo(char letra) {
+	int respu = (int)letra - 65;
+	return codigoCompresion[respu];
+}
+
+//Encuentra y retorna la longitud del codigo de la letra asociada
+int getLong(char letra) {
+	int respu = (int)letra - 65;
+	return longitudCodigo[respu];
+}
 // Esta funcion recibe como parametros el vector de datos codificados,
 // el codigo que se debe insertar, la longitud de este ultimo y la posicion donde
 // debe insertar el codigo en el vector codificado (posicionBit).
@@ -287,30 +236,56 @@ int codificar(Archivo * archivo, Archivo * archivocodificado)
 // DESARROLLAR ESTA FUNCION EN SU TOTALIDAD.
 void agregarAlArreglo(unsigned char datosCodificados[], unsigned char codigo, int longitud, int posicionBit, int nuevoTamanio)
 {
-	
+	//Se calcula cuantos bytes ha codificado el programa. la funcion de floor() encuentra el enero mas grande que ssea igual o mas pequenho que x (redondea hacia abajo a x).
+	int byteActual = (int)floor(posicionBit / 8); 
+	//El % 8 lo que hace es dar el bit en el que se esta codificando actualmente
+	int bitActual = (posicionBit % 8); 
+	// Caso donde si quepa en el byte actual
+	if (bitActual + longitud <= 8) {
+		//Crea el char Shifted, el cual contiene la informacion del codigo a agregar
+		int shiftq = longitud + bitActual;
+		unsigned char codigoTemporal = codigo << shiftq;
+		printf("%c",codigoTemporal);
+		// La opreacion OR lo que hace es coger el dato codificado y el char shifted y le agrega a datosCodificados la secuencia binaria de codigoTemporal.
+		datosCodificados[byteActual] = datosCodificados[byteActual] | codigoTemporal;
+
+	}
+
+	// Esto es para el caso donde el codigo enviado por parametro no cabe dentro de el byte actual.
+	else {
+
+
+		// Es necesario dividir el codigo de entrada en dos, esto se hace al correr a la derecha de un codigo temporal solo
+		//la cantidad de bits que le falta al byte y usar la funcion OR con datos Codificados.
+		int shift = 8 - bitActual;
+		int stemp = shift - longitud;
+		unsigned char codigoTemporal = codigo >> stemp;
+		datosCodificados[byteActual] = datosCodificados[byteActual] | codigoTemporal;
+
+
+		//Se busca cuanto se debe shift el codigo para alocar los bits que faltan en datos codificados y se aplica el mismo proceso anterior
+		int shift2 = 8 - shift;
+		unsigned char codigoTemporal2 = codigo << shift2;
+		printf("%c",codigoTemporal2);
+		datosCodificados[byteActual + 1] = datosCodificados[byteActual + 1] | codigoTemporal2;
+	}
+
+
 }
 
 //-- Funcion main de la aplicacion
 // No hay que completar nada en esta funcion.
 // NO MODIFICAR
+
 int main()
 {
-
-/*	a2i();
-	int i = 0;
-	for (int i = 0; i < NUMERO_CODIGOS; i++)
-	{
-		char x = alfabetoUtil[i];
-		printf(" el char es %c \n", x);
-	}
-*/
 	int tamanio;
 	int tamanioCodificado;
 	unsigned char nombreArchivo[] = "";
 	unsigned char nombreCodigo[] = "";
 	unsigned char nombreCodificado[] = "";
-	Archivo * archivo = (Archivo *) malloc (sizeof (Archivo));
-	Archivo * archivoCodificado = (Archivo *) malloc (sizeof (Archivo));
+	Archivo * archivo = (Archivo *)malloc(sizeof(Archivo));
+	Archivo * archivoCodificado = (Archivo *)malloc(sizeof(Archivo));
 
 	printf("Ingrese el nombre del archivo a comprimir (incluya el .txt): \n");
 	scanf("%s", &nombreArchivo);
@@ -319,7 +294,7 @@ int main()
 	printf("Ingrese el nombre del archivo que contiene el codigo (sin la extension de archivo): \n");
 	scanf("%s", &nombreCodigo);
 	uploadCode(codigoCompresion, nombreCodigo);
-	archivoCodificado -> informacion = (unsigned char *) calloc (tamanio, sizeof(unsigned char));
+	archivoCodificado->informacion = (unsigned char *)calloc(tamanio, sizeof(unsigned char));
 	printf("Ingrese el nombre del archivo para guardar el archivo codificado (incluya el .txt): \n");
 	scanf("%s", &nombreCodificado);
 	tamanioCodificado = codificar(archivo, archivoCodificado);
@@ -327,3 +302,4 @@ int main()
 
 	system("PAUSE");
 }
+
